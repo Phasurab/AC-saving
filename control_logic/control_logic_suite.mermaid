@@ -1,0 +1,54 @@
+flowchart TD
+    %% =============================================
+    %%  SUITE ROOM CONTROL LOGIC
+    %%  Rooms: 82 VIP suites
+    %%  Model: M1 LightGBM (Suite)
+    %%  Threshold: 0.40  |  Metric: F2 Occupied
+    %%  Goal: ZERO guest discomfort
+    %%  Rule: Never drops below STANDBY
+    %% =============================================
+
+    %% Styling
+    classDef occupied fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:white
+    classDef standby fill:#f39c12,stroke:#d35400,stroke-width:2px,color:white
+    classDef precool fill:#3498db,stroke:#2980b9,stroke-width:2px,color:white
+    classDef process fill:#ecf0f1,stroke:#bdc3c7,stroke-width:1px
+    classDef check fill:#f1c40f,stroke:#e67e22,stroke-width:2px
+    classDef vip fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:white
+
+    %% Entry
+    A(["Every 5 Minutes:\nSensor Payload Arrives"]):::process
+
+    %% Fail-safe
+    B{"Sensor Health OK?"}:::check
+    FS[["FORCE OCCUPIED\n(Fail-Safe: Sensors Down)"]]:::occupied
+
+    %% Night protection
+    C{"Is it Nighttime\nAND CO2 Rising?"}:::check
+    NP[["FORCE OCCUPIED\n(Sleep Protection)"]]:::occupied
+
+    %% Detection model
+    D["Run M1 LightGBM\n(Suite Model)"]:::process
+    E{"P(Occupied)\n>= 0.40 ?"}:::check
+
+    %% Occupied path
+    OCC[["OCCUPIED\nAC = Guest Setpoint\n(e.g. 22 C)"]]:::occupied
+
+    %% Empty path - forecast
+    F{"Forecast Model:\nGuest returns\nwithin 30 min?"}:::check
+    PRE[["PRE-COOL\nRamp AC to 100%\nHit setpoint before arrival"]]:::precool
+
+    %% VIP cap: max is STANDBY only
+    VIP[["VIP PROTECTION\nSuites NEVER go below\nSTANDBY state"]]:::vip
+    SBY[["STANDBY\nAC = Setpoint + 1 C\n(Max savings for suites)"]]:::standby
+
+    %% Flow
+    A --> B
+    B -- "NO" --> FS
+    B -- "YES" --> C
+    C -- "YES" --> NP
+    C -- "NO" --> D --> E
+    E -- "YES" --> OCC
+    E -- "NO" --> F
+    F -- "YES" --> PRE
+    F -- "NO" --> VIP --> SBY

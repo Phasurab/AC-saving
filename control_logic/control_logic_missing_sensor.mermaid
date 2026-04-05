@@ -1,0 +1,63 @@
+flowchart TD
+    %% =============================================
+    %%  MISSING SENSOR ROOM CONTROL LOGIC
+    %%  Rooms: 4 rooms (1002, 1005, 1602, 1032)
+    %%  Model: M1 LightGBM (Regular) + Motion Zeroed
+    %%  Threshold: 0.45  |  Safety-first
+    %%  Goal: Survive without motion data
+    %% =============================================
+
+    %% Styling
+    classDef occupied fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:white
+    classDef standby fill:#f39c12,stroke:#d35400,stroke-width:2px,color:white
+    classDef unoccupied fill:#e67e22,stroke:#d35400,stroke-width:2px,color:white
+    classDef deepsave fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:white
+    classDef precool fill:#3498db,stroke:#2980b9,stroke-width:2px,color:white
+    classDef process fill:#ecf0f1,stroke:#bdc3c7,stroke-width:1px
+    classDef check fill:#f1c40f,stroke:#e67e22,stroke-width:2px
+    classDef degrade fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:white
+
+    %% Entry
+    A(["Every 5 Minutes:\nSensor Payload Arrives"]):::process
+
+    %% Degraded mode warning
+    DG["DEGRADED MODE ACTIVE\nMotion features zeroed to -999\nRelying on: CO2, Temp, RH only"]:::degrade
+
+    %% Fail-safe: CO2 also dead?
+    B{"Is CO2 Sensor\nAlso Dead?"}:::check
+    FS[["FORCE OCCUPIED\n(Total Sensor Failure:\nKeep AC on until fixed)"]]:::occupied
+
+    %% Night protection
+    C{"Is it Nighttime\nAND CO2 Rising?"}:::check
+    NP[["FORCE OCCUPIED\n(Sleep Protection)"]]:::occupied
+
+    %% Detection model
+    D["Run M1 LightGBM\n(Regular Model)\nWith motion = -999"]:::process
+    E{"P(Occupied)\n>= 0.45 ?"}:::check
+
+    %% Confidence gate
+    CONF{"Confidence\n>= 60% ?"}:::check
+    LOW[["FORCE OCCUPIED\n(Low Confidence Fail-Safe:\nDont risk guest comfort)"]]:::occupied
+
+    %% Occupied path
+    OCC[["OCCUPIED\nAC = Guest Setpoint\n(e.g. 23 C)"]]:::occupied
+
+    %% Time-based escalation
+    G{"Minutes since\nlast occupied?"}:::check
+    SBY[["STANDBY\nAC = Setpoint + 1 C\n(e.g. 24 C)"]]:::standby
+    UNO[["UNOCCUPIED\nAC = Setpoint + 3 C\n(e.g. 26 C)"]]:::unoccupied
+    DEP[["DEEP SAVINGS\nAC = 28 C max\nDehumidify only"]]:::deepsave
+
+    %% Flow
+    A --> DG --> B
+    B -- "YES" --> FS
+    B -- "NO" --> C
+    C -- "YES" --> NP
+    C -- "NO" --> D --> E
+    E -- "YES" --> OCC
+    E -- "NO" --> CONF
+    CONF -- "NO" --> LOW
+    CONF -- "YES" --> G
+    G -- "< 60 min" --> SBY
+    G -- "1 - 12 hrs" --> UNO
+    G -- "> 12 hrs" --> DEP

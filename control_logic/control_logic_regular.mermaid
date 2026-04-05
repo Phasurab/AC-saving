@@ -1,0 +1,59 @@
+flowchart TD
+    %% =============================================
+    %%  REGULAR ROOM CONTROL LOGIC
+    %%  Rooms: 396 standard rooms
+    %%  Model: M1 LightGBM (Regular)
+    %%  Threshold: 0.55  |  Metric: F0.5 Unoccupied
+    %%  Goal: Maximize energy savings
+    %% =============================================
+
+    %% Styling
+    classDef occupied fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:white
+    classDef standby fill:#f39c12,stroke:#d35400,stroke-width:2px,color:white
+    classDef unoccupied fill:#e67e22,stroke:#d35400,stroke-width:2px,color:white
+    classDef deepsave fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:white
+    classDef precool fill:#3498db,stroke:#2980b9,stroke-width:2px,color:white
+    classDef process fill:#ecf0f1,stroke:#bdc3c7,stroke-width:1px
+    classDef check fill:#f1c40f,stroke:#e67e22,stroke-width:2px
+
+    %% Entry
+    A(["Every 5 Minutes:\nSensor Payload Arrives"]):::process
+
+    %% Fail-safe
+    B{"Sensor Health OK?"}:::check
+    FS[["FORCE OCCUPIED\n(Fail-Safe: Sensors Down)"]]:::occupied
+
+    %% Night protection
+    C{"Is it Nighttime\nAND CO2 Rising?"}:::check
+    NP[["FORCE OCCUPIED\n(Sleep Protection)"]]:::occupied
+
+    %% Detection model
+    D["Run M1 LightGBM\n(Regular Model)"]:::process
+    E{"P(Occupied)\n>= 0.55 ?"}:::check
+
+    %% Occupied path
+    OCC[["OCCUPIED\nAC = Guest Setpoint\n(e.g. 23 C)"]]:::occupied
+
+    %% Empty path - forecast
+    F{"Forecast Model:\nGuest returns\nwithin 30 min?"}:::check
+    PRE[["PRE-COOL\nRamp AC to 100%\nHit setpoint before arrival"]]:::precool
+
+    %% Time-based escalation
+    G{"Minutes since\nlast occupied?"}:::check
+    SBY[["STANDBY\nAC = Setpoint + 1 C\n(e.g. 24 C)"]]:::standby
+    UNO[["UNOCCUPIED\nAC = Setpoint + 3 C\n(e.g. 26 C)"]]:::unoccupied
+    DEP[["DEEP SAVINGS\nAC = 28 C max\nDehumidify only"]]:::deepsave
+
+    %% Flow
+    A --> B
+    B -- "NO" --> FS
+    B -- "YES" --> C
+    C -- "YES" --> NP
+    C -- "NO" --> D --> E
+    E -- "YES" --> OCC
+    E -- "NO" --> F
+    F -- "YES" --> PRE
+    F -- "NO" --> G
+    G -- "< 60 min" --> SBY
+    G -- "1 - 12 hrs" --> UNO
+    G -- "> 12 hrs" --> DEP
