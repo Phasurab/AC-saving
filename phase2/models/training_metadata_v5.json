@@ -1,0 +1,159 @@
+{
+  "version": "v5",
+  "training_date": "2026-04-06T20:26:18.769198",
+  "baseline_period": "2023-06-01 to 2024-02-28",
+  "n_baseline_rows": 258,
+  "best_ridge_config": "lean-5f",
+  "ridge": {
+    "features": [
+      "temp_wet_bulb_onsite",
+      "cdd_24c",
+      "is_weekend",
+      "sin_doy",
+      "cos_doy"
+    ],
+    "alpha": 100.0,
+    "coefficients": {
+      "temp_wet_bulb_onsite": 1194.7915222006343,
+      "cdd_24c": 363.21402522702306,
+      "is_weekend": -63.7137401952122,
+      "sin_doy": -271.90738432399047,
+      "cos_doy": -780.3054776843584
+    },
+    "holdout_nmbe": 0.67,
+    "holdout_cvrmse": 14.98,
+    "savings_kwh": 246939.0,
+    "savings_pct": 2.73
+  },
+  "gam": {
+    "features": [
+      "temp_wet_bulb_onsite",
+      "cdd_24c",
+      "is_weekend",
+      "sin_doy",
+      "cos_doy"
+    ],
+    "smooth_features": [
+      "temp_wet_bulb_onsite",
+      "cdd_24c"
+    ],
+    "holdout": {
+      "R2": 0.3547,
+      "RMSE": 2795.62,
+      "MAE": 1902.98,
+      "MBE": -343.27,
+      "CV_RMSE": 14.06,
+      "NMBE": -1.73,
+      "n_samples": 52,
+      "y_mean": 19876.81
+    },
+    "savings_kwh": 203137.0,
+    "savings_pct": 2.26
+  },
+  "xgboost": {
+    "features": [
+      "temp_wet_bulb_onsite",
+      "cdd_24c",
+      "is_weekend",
+      "sin_doy",
+      "cos_doy",
+      "day_of_week",
+      "shortwave_radiation_sum"
+    ],
+    "holdout": {
+      "R2": 0.2196,
+      "RMSE": 3074.38,
+      "MAE": 2274.28,
+      "MBE": -280.58,
+      "CV_RMSE": 15.47,
+      "NMBE": -1.41,
+      "n_samples": 52,
+      "y_mean": 19876.81
+    },
+    "savings_kwh": 139316.0,
+    "savings_pct": 1.56
+  },
+  "lightgbm": {
+    "features": [
+      "temp_dry_bulb_onsite",
+      "rh_onsite",
+      "temp_wet_bulb_onsite",
+      "is_weekend",
+      "day_of_week",
+      "sin_doy",
+      "cos_doy",
+      "is_public_holiday_th",
+      "is_long_weekend_block",
+      "is_hot_season_proxy",
+      "is_rainy_season_proxy",
+      "daylength_hours"
+    ],
+    "holdout": {
+      "R2": 0.1628,
+      "RMSE": 3184.41,
+      "MAE": 2215.46,
+      "MBE": -711.55,
+      "CV_RMSE": 16.02,
+      "NMBE": -3.58,
+      "n_samples": 52,
+      "y_mean": 19876.81
+    },
+    "savings_kwh": 218444.0,
+    "savings_pct": 2.43
+  },
+  "placebo_test": {
+    "Ridge": {
+      "pseudo_savings_pct": 5.01,
+      "metrics": {
+        "R2": 0.2368,
+        "RMSE": 3113.38,
+        "MAE": 2344.11,
+        "MBE": -1029.82,
+        "CV_RMSE": 15.94,
+        "NMBE": -5.27,
+        "n_samples": 90,
+        "y_mean": 19534.55
+      }
+    },
+    "GAM": {
+      "pseudo_savings_pct": 5.08,
+      "metrics": {
+        "R2": 0.2199,
+        "RMSE": 3147.67,
+        "MAE": 2319.19,
+        "MBE": -1045.07,
+        "CV_RMSE": 16.11,
+        "NMBE": -5.35,
+        "n_samples": 90,
+        "y_mean": 19534.55
+      }
+    },
+    "XGBoost": {
+      "pseudo_savings_pct": -0.28,
+      "metrics": {
+        "R2": 0.2294,
+        "RMSE": 3128.54,
+        "MAE": 2404.91,
+        "MBE": 55.25,
+        "CV_RMSE": 16.02,
+        "NMBE": 0.28,
+        "n_samples": 90,
+        "y_mean": 19534.55
+      }
+    },
+    "LightGBM": {
+      "pseudo_savings_pct": 1.2,
+      "metrics": {
+        "R2": 0.1224,
+        "RMSE": 3338.49,
+        "MAE": 2390.11,
+        "MBE": -237.79,
+        "CV_RMSE": 17.09,
+        "NMBE": -1.22,
+        "n_samples": 90,
+        "y_mean": 19534.55
+      }
+    }
+  },
+  "cross_model_spread_pp": 1.17
+}

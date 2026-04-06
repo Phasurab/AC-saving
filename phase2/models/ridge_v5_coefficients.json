@@ -1,0 +1,24 @@
+{
+  "features": [
+    "temp_wet_bulb_onsite",
+    "cdd_24c",
+    "is_weekend",
+    "sin_doy",
+    "cos_doy"
+  ],
+  "alpha": 100.0,
+  "intercept": 21764.701194573638,
+  "coefficients": {
+    "temp_wet_bulb_onsite": 1194.7915222006343,
+    "cdd_24c": 363.21402522702306,
+    "is_weekend": -63.7137401952122,
+    "sin_doy": -271.90738432399047,
+    "cos_doy": -780.3054776843584
+  },
+  "holdout_metrics": {
+    "lean-5f": {
+      "NMBE": 0.67,
+      "CV_RMSE": 14.98
+    }
+  }
+}

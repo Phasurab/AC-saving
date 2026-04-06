@@ -1,0 +1,36 @@
+{
+  "A1": {
+    "metrics": {
+      "R2": -3.2974,
+      "CV_RMSE": 32.23,
+      "NMBE": -31.4
+    },
+    "savings_pct": -45.77,
+    "placebo_pct": -71.87,
+    "covariates": [
+      "temp_wet_bulb_onsite",
+      "cdd_24c",
+      "is_weekend",
+      "sin_doy",
+      "cos_doy"
+    ]
+  },
+  "A2": {
+    "metrics": {
+      "R2": -14.5501,
+      "CV_RMSE": 61.3,
+      "NMBE": -58.59
+    },
+    "savings_pct": -141.49
+  },
+  "B1": {
+    "metrics": {
+      "R2": -13.9457,
+      "CV_RMSE": 60.1,
+      "NMBE": -58.93
+    },
+    "savings_pct": -143.48,
+    "ridge_only": 2.73,
+    "resid_mean": -12554.1
+  }
+}

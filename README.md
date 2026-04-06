@@ -1,45 +1,53 @@
-# 🏨 Hotel Occupancy Detection & HVAC Control System
+# ⚡ AC Energy Optimization — AI-Driven HVAC Intelligence
 
-> **Phase 1 — "The Eyes & The Brain"**  
-> AI-driven room occupancy detection with intelligent HVAC control logic for The Seaview Grand hotel.
+> A two-phase AI system: **Phase 1** detects room occupancy to drive smart HVAC control, **Phase 2** rigorously measures and verifies the energy savings using IPMVP-compliant baselines.
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg)](https://python.org)
-[![LightGBM](https://img.shields.io/badge/Model-LightGBM-success.svg)](https://lightgbm.readthedocs.io)
+[![LightGBM](https://img.shields.io/badge/Phase_1-LightGBM-success.svg)](https://lightgbm.readthedocs.io)
+[![Ridge](https://img.shields.io/badge/Phase_2-Ridge_Regression-blue.svg)]()
+[![ASHRAE 14](https://img.shields.io/badge/ASHRAE_14-Compliant-brightgreen.svg)]()
+[![IPMVP](https://img.shields.io/badge/IPMVP-Option_C-orange.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Key Results](#key-results)
-- [Project Structure](#project-structure)
+- [Project Overview](#project-overview)
+- [Phase 1 — Occupancy Detection & HVAC Control](#phase-1--occupancy-detection--hvac-control)
+- [Phase 2 — Measurement & Verification (M&V)](#phase-2--measurement--verification-mv)
+- [Repository Structure](#repository-structure)
 - [Quick Start](#quick-start)
-- [Models Evaluated](#models-evaluated)
-- [HVAC Control Logic](#hvac-control-logic)
-- [Data](#data)
 - [Documentation](#documentation)
 
 ---
 
-## 🎯 Overview
+## 🎯 Project Overview
 
-This project builds a **room occupancy detection system** using multi-sensor data (CO2, Temperature, Humidity, Motion) from 400+ hotel rooms. The AI predictions drive a graduated **5-state HVAC control strategy** that balances energy savings with guest comfort — per the GM's guiding constraint:
+This repository contains the complete AI-driven AC energy optimization pipeline for a commercial facility in Si Racha, Thailand:
 
-> *"If a single VIP guest complains that their room was warm, this whole project is dead."*
+| Phase | Goal | Primary Model | Key Metric |
+|---|---|---|---|
+| **Phase 1** | Detect room occupancy → Control HVAC | LightGBM (M1) | 98.4% Recall, 0.840 F1 |
+| **Phase 2** | Measure & verify energy savings | Ridge Regression | 2.73% savings, NMBE = −0.67% |
 
-### Key Achievements
-
-- **98.4% Recall** for occupied rooms — virtually no sleeping guests missed
-- **0.840 Macro F1** on the production model (M1 LightGBM)
-- **3 room-type-specific thresholds** optimized for different risk profiles
-- **30-minute ahead forecast** enabling proactive PRE-COOL before guest returns
-- **Proxy inference** for 56.4% of data with corrupted presence labels
+```
+Phase 1: "The Eyes & The Brain"          Phase 2: "The Proof"
+┌─────────────────────────┐              ┌─────────────────────────┐
+│  Sensor Data → AI Model │              │  Energy Data → Baseline │
+│  → Occupancy Detection  │     ───►     │  → Counterfactual Pred  │
+│  → HVAC Control Logic   │              │  → Verified Savings     │
+│  → 5-State Setpoints    │              │  → Audit-Ready Report   │
+└─────────────────────────┘              └─────────────────────────┘
+```
 
 ---
 
-## 🏗 Architecture
+## 🏨 Phase 1 — Occupancy Detection & HVAC Control
+
+> **"The Eyes & The Brain"** — AI-driven room occupancy detection with intelligent HVAC control logic for The Seaview Grand hotel.
+
+### Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -77,11 +85,9 @@ This project builds a **room occupancy detection system** using multi-sensor dat
 └─────────────────────────────────────────────────────────┘
 ```
 
----
+### Key Results
 
-## 📊 Key Results
-
-### Detection Benchmark (5 Models)
+#### Detection Benchmark (5 Models)
 
 | Model | Architecture | Macro F1 | Recall (Occ) | Cohen κ | ROC-AUC |
 |-------|-------------|:--------:|:------------:|:-------:|:-------:|
@@ -93,7 +99,7 @@ This project builds a **room occupancy detection system** using multi-sensor dat
 
 > ✅ **M1 LightGBM selected** for production: best forecast (Brier=0.105), 200× faster inference, no GPU required, fully interpretable.
 
-### Forecast Benchmark (+30 min ahead)
+#### Forecast Benchmark (+30 min ahead)
 
 | Model | Brier ↓ | PR-AUC ↑ | Macro F1 | Cohen κ |
 |-------|:-------:|:--------:|:--------:|:-------:|
@@ -101,7 +107,7 @@ This project builds a **room occupancy detection system** using multi-sensor dat
 | M3 | 0.136 | 0.964 | 0.637 | 0.309 |
 | M0 | 0.146 | 0.943 | 0.538 | 0.159 |
 
-### Business-Aligned Thresholds
+#### Business-Aligned Thresholds
 
 | Room Type | Metric Optimized | Threshold | Score |
 |-----------|------------------|:---------:|:-----:|
@@ -109,119 +115,7 @@ This project builds a **room occupancy detection system** using multi-sensor dat
 | VIP Suite (82 rooms) | F2 (Occ) — recall of "occupied" calls | **0.40** | 0.965 |
 | Missing Sensor (4 rooms) | F0.5 + Recall ≥ 0.95 | **0.45** | 0.740 |
 
----
-
-## 📁 Project Structure
-
-```
-├── README.md                          # This file
-├── .gitignore                         # Excludes large data/models
-├── requirements.txt                   # Python dependencies
-│
-├── docs/
-│   ├── phase1_report.md               # Full Phase 1 report (markdown)
-│   ├── data_dictionary.md             # Sensor data dictionary
-│   ├── control_logic.md               # HVAC control logic documentation
-│   └── assets/                        # Key report visualizations
-│       ├── detection_comparison.png
-│       ├── forecast_comparison.png
-│       ├── control_logic_regular.png
-│       ├── control_logic_suite.png
-│       ├── control_logic_missing_sensor.png
-│       └── architecture_overview.png
-│
-├── notebooks/
-│   ├── 01_data_cleaning.ipynb         # Raw data cleaning pipeline
-│   └── 02_eda_and_modeling.ipynb      # EDA + feature engineering + models
-│
-├── src/
-│   ├── __init__.py
-│   ├── data_preparation.py            # Raw data → cleaned splits
-│   ├── feature_engineering.py         # 93 engineered features
-│   ├── eda_analysis.py                # EDA visualization code
-│   │
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── m0_baseline/               # Simple threshold rules
-│   │   ├── m1_lightgbm/               # LightGBM + RF feature selection ✅
-│   │   ├── m2_patchtst/               # PatchTST transformer
-│   │   ├── m3_inceptiontime/          # InceptionTime 1D-CNN
-│   │   └── m4_gaf_efficientnet/       # GAF image + EfficientNet
-│   │
-│   ├── evaluation/
-│   │   ├── __init__.py
-│   │   ├── model_comparison.py        # Cross-model benchmark
-│   │   └── segment_evaluation.py      # Per-segment F-beta evaluation
-│   │
-│   └── production/
-│       ├── __init__.py
-│       ├── room_gateway.py            # Room-type → model routing
-│       ├── train_per_segment.py       # Per-segment production training
-│       └── infer_unknown.py           # Proxy inference for corrupted labels
-│
-├── data/
-│   └── external/
-│       └── th_holiday_event_macro_features.csv   # Thai holidays + events
-│
-└── control_logic/
-    ├── control_logic_regular.mermaid
-    ├── control_logic_suite.mermaid
-    └── control_logic_missing_sensor.mermaid
-```
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.10+
-- ~16 GB RAM (for full dataset processing)
-
-### Installation
-
-```bash
-git clone https://github.com/<your-username>/hotel-occupancy-detection.git
-cd hotel-occupancy-detection
-pip install -r requirements.txt
-```
-
-### Running the Pipeline
-
-```bash
-# 1. Data preparation (requires raw CSV in data/)
-python src/data_preparation.py
-
-# 2. Feature engineering
-python src/feature_engineering.py
-
-# 3. Train & evaluate a model (e.g., M1 LightGBM)
-python src/models/m1_lightgbm/pipeline.py
-
-# 4. Compare all models
-python src/evaluation/model_comparison.py
-
-# 5. Production inference on unknown labels
-python src/production/infer_unknown.py
-```
-
-> **Note:** Raw data files (`phase1_dataset.csv`, ~5.5 GB) and trained model weights are excluded from this repo via `.gitignore`. Contact the project owner for data access.
-
----
-
-## 🤖 Models Evaluated
-
-| # | Model | Approach | Strengths | Weaknesses |
-|---|-------|----------|-----------|------------|
-| M0 | **Baseline** | Hand-coded if/else rules | Fast, interpretable, no training | Low F1, no probability calibration |
-| M1 | **LightGBM** | Gradient boosting + RF feature selection | Best forecast, fast inference, interpretable | Requires feature engineering |
-| M2 | **PatchTST** | Transformer on sensor patches | Captures long-range temporal dependencies | High model bias, slow training |
-| M3 | **InceptionTime** | Multi-scale 1D-CNN | Best detection F1 (0.845), strong κ | GPU required, 200× slower inference |
-| M4 | **GAF-EfficientNet** | Gramian angular field images + CNN | Novel approach, image-based | Poor calibration, needs GPU |
-
----
-
-## 🌡 HVAC Control Logic
+### HVAC Control Logic
 
 A graduated **5-state thermal drift strategy** aligned with ASHRAE Standards 55 & 36:
 
@@ -233,7 +127,7 @@ A graduated **5-state thermal drift strategy** aligned with ASHRAE Standards 55 
 | 🟤 **UNOCCUPIED** | Empty 1–12 hrs | +3°C | ~8 min |
 | 🔴 **DEEP SAVINGS** | Empty > 12 hrs | 28°C cap | ~15 min |
 
-### Safety Overrides ("The Khun Somchai Rules")
+#### Safety Overrides ("The Khun Somchai Rules")
 
 | Edge Case | Rule |
 |-----------|------|
@@ -244,22 +138,182 @@ A graduated **5-state thermal drift strategy** aligned with ASHRAE Standards 55 
 
 ---
 
+## ⚡ Phase 2 — Measurement & Verification (M&V)
+
+> **"The Proof"** — Weather-adjusted baseline regression and savings estimation under IPMVP Option C.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     DATA LAYER                               │
+│  On-site BMS (4 columns) + Si Racha Weather (32 columns)     │
+│  693 daily observations (May 2023 – Mar 2026)                │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│               FEATURE ENGINEERING                            │
+│  Wet-bulb temp │ CDD₂₄ │ is_weekend │ sin/cos_doy           │
+│  Collinearity removal │ 8 configs tested │ NMBE-first        │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              MODEL TRAINING & VALIDATION                     │
+│  Ridge (Primary) │ GAM (Backup) │ XGBoost │ LightGBM        │
+│  + Chronos-2 & TimesFM foundation model experiments          │
+│  ASHRAE Guideline 14 compliance │ Placebo test               │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│             SAVINGS ESTIMATION                               │
+│  Counterfactual: Predicted baseline − Actual metered         │
+│  Primary: 2.73% │ Range: 1.56%–2.73% │ Cost: ~988k THB      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Results
+
+| Metric | Value |
+|---|---|
+| **Primary model** | Ridge Regression (5 features, α = 100) |
+| **Total energy saved** | **246,939 kWh** (over 15 months) |
+| **Savings percentage** | **2.73%** |
+| **Cross-model range** | 1.56% – 2.73% (4 independent architectures) |
+| **Estimated cost savings** | ~988,000 THB (~$27,400 USD/year) |
+
+#### Model Comparison
+
+| Model | Role | Savings % | |NMBE| | CV(RMSE) | ASHRAE |
+|---|---|---|---|---|---|
+| **Ridge** | **Primary** | **2.73** | **0.67%** | 14.98% | ✅ |
+| GAM | Backup | 2.26 | 1.73% | 14.06% | ✅ |
+| LightGBM | Benchmark | 2.43 | 3.58% | 16.02% | ✅ |
+| XGBoost | Robustness | 1.56 | 1.41% | 15.47% | ✅ |
+| Ridge+TimesFM | Appendix | 1.85 | 1.88% | 6.74% | ✅ |
+
+> **Ridge selected as primary** — lowest bias (NMBE = −0.67%), fully interpretable, trivially auditable.
+
+#### Foundation Model Experiments
+
+6 experiments tested Chronos-2 and TimesFM. All Chronos-2 variants failed catastrophically due to the 10-month data gap. Only TimesFM residual correction survived as an appendix model.
+
+| Experiment | Model | Savings | Decision |
+|---|---|---|---|
+| A1 | Chronos-2 + covariates | −45.77% | ❌ Drop |
+| A2 | Chronos-2 naive (120M) | −141.49% | ❌ Drop |
+| B1 | Ridge + Chronos-2 resid | −143.48% | ❌ Drop |
+| B2 | Ridge + TimesFM resid | **1.85%** | 📎 Appendix |
+
+Full analysis: [Phase 2 FM Drop Analysis Report](phase2/docs/FM_Drop_Analysis_Report.md)
+
+#### Cumulative Savings
+
+![Cumulative Savings](phase2/docs/assets/05_cumulative_savings.png)
+
+---
+
+## 📁 Repository Structure
+
+```
+AC-Energy-Optimization/
+│
+├── README.md                               # ★ This file (central overview)
+│
+├── ── Phase 1: Occupancy Detection ──────────────────────────
+├── .gitignore
+├── requirements.txt                        # Phase 1 dependencies
+├── control_logic/                          # HVAC control state machines
+├── data/external/                          # Thai holiday features
+├── docs/                                   # Phase 1 reports & assets
+│   ├── phase1_report.md
+│   ├── data_dictionary.md
+│   ├── control_logic.md
+│   └── assets/                             # Phase 1 visualizations
+├── notebooks/                              # Phase 1 Jupyter notebooks
+│   ├── 01_data_cleaning.ipynb
+│   └── 02_eda_and_modeling.ipynb
+├── src/                                    # Phase 1 source code
+│   ├── data_preparation.py
+│   ├── feature_engineering.py
+│   ├── eda_analysis.py
+│   ├── models/                             # M0–M4 model pipelines
+│   ├── evaluation/                         # Cross-model benchmarking
+│   └── production/                         # Production inference
+│
+├── ── Phase 2: M&V Savings Analysis ─────────────────────────
+└── phase2/
+    ├── README.md                           # Phase 2 detailed README
+    ├── requirements.txt                    # Phase 2 dependencies
+    ├── .gitignore                          # Phase 2 exclusions
+    ├── notebooks/
+    │   └── 01_baseline_and_savings.py      # ★ End-to-end M&V pipeline
+    ├── src/
+    │   ├── data_preparation.py             # Data loading & features
+    │   ├── model_training.py               # Ridge, GAM, XGB training
+    │   └── savings.py                      # Counterfactual calculation
+    ├── docs/
+    │   ├── Executive_Summary.md
+    │   ├── Technical_Appendix.md
+    │   ├── FM_Drop_Analysis_Report.md      # 25-page foundation model report
+    │   └── assets/                         # Phase 2 visualizations
+    └── models/
+        ├── ridge_v5_coefficients.json      # Human-readable coefficients
+        ├── training_metadata_v5.json       # Training metadata
+        └── foundation_experiments_v5.json  # FM experiment results
+```
+
+---
+
+## 🚀 Quick Start
+
+### Phase 1 — Occupancy Detection
+
+```bash
+git clone https://github.com/Phasurab/AC-Energy-Optimization.git
+cd AC-Energy-Optimization
+pip install -r requirements.txt
+
+# Run the pipeline
+python src/data_preparation.py
+python src/feature_engineering.py
+python src/models/m1_lightgbm/pipeline.py
+python src/evaluation/model_comparison.py
+```
+
+### Phase 2 — M&V Analysis
+
+```bash
+cd phase2
+pip install -r requirements.txt
+
+# Run the end-to-end M&V pipeline
+python notebooks/01_baseline_and_savings.py
+```
+
+> **Note:** Raw data files and model weights are excluded via `.gitignore`. Contact the project owner for data access.
+
+---
+
 ## 📂 Data
 
-### Source Dataset
+### Phase 1
 - **53.3M** raw sensor rows from 482 rooms over 77 days
-- 5-minute sampling interval
-- Sensors: CO2 (ppm), Temperature (°C), Humidity (%), Motion (events)
+- 5-minute sampling interval: CO2, Temperature, Humidity, Motion
 - 56.4% of presence labels corrupted (sensor disconnections)
 
-### External Features
-- Thai holiday & event calendar (1,016 days, 25 columns)
-- Tourism season proxies, local Pattaya/Sri Racha events
-- Cyclic time encoding (hour/day-of-week sin/cos)
+### Phase 2
+- **693** daily energy readings (May 2023 – Mar 2026)
+- On-site BMS: 4 weather columns (dry-bulb, wet-bulb, RH)
+- External Si Racha weather enrichment: 32 features
 
 ---
 
 ## 📄 Documentation
+
+### Phase 1
 
 | Document | Description |
 |----------|-------------|
@@ -267,12 +321,33 @@ A graduated **5-state thermal drift strategy** aligned with ASHRAE Standards 55 
 | [Data Dictionary](docs/data_dictionary.md) | Sensor types, value ranges, and data structure |
 | [Control Logic](docs/control_logic.md) | HVAC control strategy with mermaid flowcharts |
 
+### Phase 2
+
+| Document | Description |
+|----------|-------------|
+| [Phase 2 README](phase2/README.md) | Detailed Phase 2 setup and results |
+| [Executive Summary](phase2/docs/Executive_Summary.md) | 1-page stakeholder summary |
+| [Technical Appendix](phase2/docs/Technical_Appendix.md) | Full technical details |
+| [FM Analysis Report](phase2/docs/FM_Drop_Analysis_Report.md) | 25-page foundation model assessment |
+
+---
+
+## 📚 References
+
+| # | Reference | Phase |
+|---|-----------|-------|
+| 1 | ASHRAE Standard 55-2020 — Thermal Comfort | 1 & 2 |
+| 2 | ASHRAE Guideline 14-2014 — M&V Calibration | 2 |
+| 3 | IPMVP 2022 — Option C Whole-Facility | 2 |
+| 4 | Das et al. (2025) — Chronos-2 | 2 |
+| 5 | Das et al. (2024) — TimesFM | 2 |
+
 ---
 
 ## 📝 License
 
-This project was developed as part of the AltoTech AI Engineer Assessment. Data is anonymized and derived from real hotel deployments.
+This project was developed as part of the AltoTech AI Engineer Assessment. Data is anonymized and derived from real deployments.
 
 ---
 
-*Built with ❤️ for energy-efficient hotel operations*
+*Built with ❤️ for energy-efficient operations — from detection to verification*

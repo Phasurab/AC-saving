@@ -1,0 +1,59 @@
+# ═══════════════════════════════════════════════════════════════
+# Phase 2: AI HVAC Energy Optimization M&V — .gitignore
+# ═══════════════════════════════════════════════════════════════
+
+# ── Large Data Files ─────────────────────────────────────────
+*.csv
+*.parquet
+*.h5
+*.hdf5
+# Allow small external data files
+!data/external/*.csv
+
+# ── Model Weights ────────────────────────────────────────────
+*.pkl
+*.joblib
+*.onnx
+*.bin
+*.pt
+*.pth
+
+# ── XGBoost / LightGBM text dumps ────────────────────────────
+models/*.txt
+models/*.json
+!models/ridge_v5_coefficients.json
+!models/foundation_experiments_v5.json
+!models/training_metadata_v5.json
+
+# ── Reports / PDFs ───────────────────────────────────────────
+*.pdf
+
+# ── Jupyter Notebook Checkpoints ─────────────────────────────
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── OS Files ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE / Editor ─────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace
+
+# ── Python Environments ──────────────────────────────────────
+.venv*/
+venv/
+env/
+.conda/
+*.egg-info/
+dist/
+build/
+
+# ── Misc ─────────────────────────────────────────────────────
+*.log
+*.tmp
+.temp-repair/
