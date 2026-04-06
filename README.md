@@ -222,29 +222,28 @@ AC-Energy-Optimization/
 │
 ├── README.md                               # ★ This file (central overview)
 │
-├── ── Phase 1: Occupancy Detection ──────────────────────────
-├── .gitignore
-├── requirements.txt                        # Phase 1 dependencies
-├── control_logic/                          # HVAC control state machines
-├── data/external/                          # Thai holiday features
-├── docs/                                   # Phase 1 reports & assets
-│   ├── phase1_report.md
-│   ├── data_dictionary.md
-│   ├── control_logic.md
-│   └── assets/                             # Phase 1 visualizations
-├── notebooks/                              # Phase 1 Jupyter notebooks
-│   ├── 01_data_cleaning.ipynb
-│   └── 02_eda_and_modeling.ipynb
-├── src/                                    # Phase 1 source code
-│   ├── data_preparation.py
-│   ├── feature_engineering.py
-│   ├── eda_analysis.py
-│   ├── models/                             # M0–M4 model pipelines
-│   ├── evaluation/                         # Cross-model benchmarking
-│   └── production/                         # Production inference
+├── phase1/                                 # Phase 1: Occupancy Detection
+│   ├── .gitignore
+│   ├── requirements.txt                    # Phase 1 dependencies
+│   ├── control_logic/                      # HVAC control state machines
+│   ├── data/external/                      # Thai holiday features
+│   ├── docs/                               # Phase 1 reports & assets
+│   │   ├── phase1_report.md
+│   │   ├── data_dictionary.md
+│   │   ├── control_logic.md
+│   │   └── assets/                         # Phase 1 visualizations
+│   ├── notebooks/                          # Phase 1 Jupyter notebooks
+│   │   ├── 01_data_cleaning.ipynb
+│   │   └── 02_eda_and_modeling.ipynb
+│   └── src/                                # Phase 1 source code
+│       ├── data_preparation.py
+│       ├── feature_engineering.py
+│       ├── eda_analysis.py
+│       ├── models/                         # M0–M4 model pipelines
+│       ├── evaluation/                     # Cross-model benchmarking
+│       └── production/                     # Production inference
 │
-├── ── Phase 2: M&V Savings Analysis ─────────────────────────
-└── phase2/
+└── phase2/                                 # Phase 2: M&V Savings Analysis
     ├── README.md                           # Phase 2 detailed README
     ├── requirements.txt                    # Phase 2 dependencies
     ├── .gitignore                          # Phase 2 exclusions
@@ -273,7 +272,7 @@ AC-Energy-Optimization/
 
 ```bash
 git clone https://github.com/Phasurab/AC-Energy-Optimization.git
-cd AC-Energy-Optimization
+cd AC-Energy-Optimization/phase1
 pip install -r requirements.txt
 
 # Run the pipeline
@@ -317,9 +316,9 @@ python notebooks/01_baseline_and_savings.py
 
 | Document | Description |
 |----------|-------------|
-| [Phase 1 Report](docs/phase1_report.md) | Full technical report with all EDA, model results, and control logic |
-| [Data Dictionary](docs/data_dictionary.md) | Sensor types, value ranges, and data structure |
-| [Control Logic](docs/control_logic.md) | HVAC control strategy with mermaid flowcharts |
+| [Phase 1 Report](phase1/docs/phase1_report.md) | Full technical report with all EDA, model results, and control logic |
+| [Data Dictionary](phase1/docs/data_dictionary.md) | Sensor types, value ranges, and data structure |
+| [Control Logic](phase1/docs/control_logic.md) | HVAC control strategy with mermaid flowcharts |
 
 ### Phase 2
 
